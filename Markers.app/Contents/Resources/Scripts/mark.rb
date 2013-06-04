@@ -28,17 +28,28 @@ def calulateOffset(element)
   return parseTime(element.attribute("start")) - parseTime(element.attribute("offset"))
 end
 
+def calulateEndOffset(element)
+  return parseTime(element.attribute("posterOffset")) - parseTime(element.attribute("offset"))
+end
+
 # get the framerate in milliseconds
 framerate = parseTime(doc.elements["project/resources/format"].attribute("frameDuration"))
 
+puts '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points>'
+
 # loop through all "marker" elements
-doc.elements.to_a("//marker").each_with_index do |marker, i| 
+doc.elements.to_a("//chapter-marker").each_with_index do |marker, i| 
   uncompensatedTotal = parseTime(marker.attribute("start")) - calulateOffset(marker.parent)
   total = uncompensatedTotal - ( uncompensatedTotal * COMPRESSOR_ERROR )
+  uncompensatedEnd = parseTime(marker.attribute("posterOffset")) - calulateEndOffset(marker.parent)
+  chapterEnd = uncompensatedEnd - ( uncompensatedEnd * COMPRESSOR_ERROR )
   timecode = []
   timecode.push '%02d' % (total / 60 / 60 % 60) #hours
   timecode.push '%02d' % (total / 60 % 60).floor #Minutes
   timecode.push '%02d' % (total % 60).floor #seconds
   timecode.push '%02d' % (total % 1 / framerate).floor #frames
-  puts  timecode.join(":") + " " + marker.attribute('value').to_s #print that shiz
+  puts  '  <marker start="' + (total % 60).floor.to_s + '" end="' + ((total % 60).floor + (chapterEnd % 60).floor).to_s + '" value="' + marker.attribute('value').to_s + '" />' #print that shiz
 end
+
+puts '</points>'
