@@ -49,7 +49,7 @@ doc.elements.to_a("//chapter-marker").each_with_index do |marker, i|
   timecode.push '%02d' % (total / 60 % 60).floor #Minutes
   timecode.push '%02d' % (total % 60).floor #seconds
   timecode.push '%02d' % (total % 1 / framerate).floor #frames
-  puts  '  <marker start="' + (total % 60).floor.to_s + '" end="' + ((total % 60).floor + (chapterEnd % 60).floor).to_s + '" value="' + marker.attribute('value').to_s + '" />' #print that shiz
+  puts  '  <marker start="' + (total).floor.to_s + '" end="' + ((total).floor + (chapterEnd).floor).to_s + '" value="' + marker.attribute('value').to_s + '" />' #print that shiz
 end
 
 puts '</points>'
